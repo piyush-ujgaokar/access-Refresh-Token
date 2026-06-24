@@ -1,19 +1,30 @@
-import axios from 'axios'
+import axios from "axios";
 
-const axiosInstance=axios.create({
-    baseURL: "http://localhost:3000"
+
+
+export const axiosInstance=axios.create({
+    baseURL:"http://localhost:3000",
+    withCredentials:true
 })
 
+axiosInstance.interceptors.response.use(
+    (response)=> response,
+    async(error)=>{
 
-axiosInstance.interceptors.response.use({
-    (response)=>{
-        console.log("axios instance Response=>",result)
-    },
-    (err)=>{
-        console.log("axios Instance Error=>",err)
+        const originalReq=error.config
+
+      if(error.response.status===401 || !originalReq.retry){
+
+        originalReq.retry=true
+
+         try {
+            let res=await axiosInstance.get('/api/auth/get-accessToken')
+            console.log(res)
+            return axiosInstance(originalReq)
+       } catch (error) {
+            window.location.href='/'
+            return Promise.reject(error)
+       }
+      }
     }
-})
-
-
-
-export default axiosInstance
+)

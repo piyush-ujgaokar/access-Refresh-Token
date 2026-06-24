@@ -7,9 +7,9 @@ const jwt=require('jsonwebtoken')
 const registerService=async (data)=>{
     try {
 
-    const {email,name,password}=data
+    const {email,username,password}=data
 
-    if(!email || !name || !password){
+    if(!email || !username || !password){
        throw Error("All Fields Are Required")
     }
 
@@ -23,7 +23,7 @@ const registerService=async (data)=>{
 
     const user=await userModel.create({
         email,
-        name,
+        username,
         password:hashPassword
     })
 
